@@ -1,0 +1,11 @@
+TQ subsonic Wind Tunnel
+
+Lift uncertainty: 0.05N
+Drag uncertainty: 0.015N
+
+HD350: Pitot Tube Anemometer + Differential Manometer
+
+Uncertainty: http://www.extech.com/products/HD350
+
+±0.3%FS
+

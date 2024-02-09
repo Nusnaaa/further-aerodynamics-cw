@@ -1,0 +1,7 @@
+Observation from experment
+
+Barometric pressure smallest unit: 10Pa
+
+VDAS Pressure Tapping smallest unit: 0.001 Bar
+
+[i.e. the above data are not the uncertainties but precision]
