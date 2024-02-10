@@ -87,13 +87,13 @@ supersonicUncertaintity = readlines("WT Data for Further Aerodynamics cw\Superso
             arr = strsplit(line);                       % split the strings
             arr(1) = [];                                % remove the empty cell on at start of line
             arr(1) = [];
-            arr(1) = "Pressure [Bar]";
+            arr(1) = "Pressure";
             str2double( arr(2:end) );
             supersonic150_PSI = vertcat(supersonic150_PSI,arr);             % concatenate with main array
         elseif line.startsWith("data [Bar]")
             arr = strsplit(line);
             arr(1) = [];
-            arr(1) = "Pressure [Bar]";
+            arr(1) = "Pressure";
             str2double( arr(2:end) );
             supersonic150_PSI = vertcat(supersonic150_PSI,arr);
         elseif line.startsWith("Pressure")                                  % generating the header names
@@ -127,13 +127,13 @@ supersonicUncertaintity = readlines("WT Data for Further Aerodynamics cw\Superso
             arr = strsplit(line);                       % split the strings
             arr(1) = [];                                % remove the empty cell on at start of line
             arr(1) = [];
-            arr(1) = "Pressure [Bar]";
+            arr(1) = "Pressure";
             str2double( arr(2:end) );             % converting the pressures from bar to Pa
             supersonic75_PSI = vertcat(supersonic75_PSI,arr);             % concatenate with main array
         elseif line.startsWith("data [Bar]")
             arr = strsplit(line);
             arr(1) = [];
-            arr(1) = "Pressure [Bar]";
+            arr(1) = "Pressure";
             str2double( arr(2:end) );
             supersonic75_PSI = vertcat(supersonic75_PSI,arr);
         elseif line.startsWith("Pressure")                                  % generating the header names
