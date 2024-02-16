@@ -4,8 +4,8 @@ bar2Pa = 100000;
 Task 1.1: Theoretical Mach number variation along working section 
 Interpolating the wind tunnel liner dimensions
 Interpolation is necessary to align the points on both sections of the aerofoil. Later calculations will require consistent, matching point numbering. The values will also be converted to SI units from Imperial units.
-topSurface_inches = readtable("aerofoil-surface-dimensions.xlsx","Sheet","Top Surface")
-bottomSurface_inches = readtable("aerofoil-surface-dimensions.xlsx",Sheet="Bottom Surface")
+topSurface_inches = readtable("Work\aerofoil-surface-dimensions.xlsx","Sheet","Top Surface")
+bottomSurface_inches = readtable("Work\aerofoil-surface-dimensions.xlsx",Sheet="Bottom Surface")
 
 topSurfaceArray_inches = table2array(topSurface_inches);
 bottomSurfaceArray_inches = table2array(bottomSurface_inches);
@@ -66,9 +66,9 @@ The wind tunnel is run at 2 different pressures - 150psi and 75psi- these are th
 Preparing the raw data
 The provided data has been given in text format and cannot easily be converted to a readable spreadsheet. To achieve a usable tabular format, the data will need to be split into individual elements and the reassembeled into a usable table/array. The following will be my attempt at accomplishing this using the knowledge from py4e.
 % Loading the data into MATLAB
-supersonic150_psi = readlines("WT Data for Further Aerodynamics cw\Supersonic Data\Data\supersonic150Psi.txt");
-supersonic75_psi = readlines("WT Data for Further Aerodynamics cw\Supersonic Data\Data\supersonick75Psi.txt");
-supersonicUncertaintity = readlines("WT Data for Further Aerodynamics cw\Supersonic Data\Data\Uncertainty.txt")
+supersonic150_psi = readlines("Work\WT Data for Further Aerodynamics cw\Supersonic Data\Data\supersonic150Psi.txt");
+supersonic75_psi = readlines("Work\WT Data for Further Aerodynamics cw\Supersonic Data\Data\supersonick75Psi.txt");
+supersonicUncertaintity = readlines("Work\WT Data for Further Aerodynamics cw\Supersonic Data\Data\Uncertainty.txt")
 
 %% Supersonic data at 150 psi
 
@@ -151,18 +151,40 @@ supersonicUncertaintity = readlines("WT Data for Further Aerodynamics cw\Superso
 
 %% Converting from bar to Pa
 
-    supersonic75_PSI_array = str2double( table2array( supersonic75_PSI_tab(:,2:end) ) );
-    supersonic75_PSI_bar_array = supersonic75_PSI_array*bar2Pa + 269;
+    supersonic75_PSI_array = str2double( table2array( supersonic75_PSI_tab(:,2:end-1) ) );
+    supersonic75_PSI_pascals_array = supersonic75_PSI_array*bar2Pa + 269;
 
-    supersonic150_PSI_array = str2double( table2array( supersonic150_PSI_tab(:,2:end) ) );
-    supersonic150_PSI_bar_array = supersonic150_PSI_array*bar2Pa + 269;
+    supersonic150_PSI_array = str2double( table2array( supersonic150_PSI_tab(:,2:end-1) ) );
+    supersonic150_PSI_pascals_array = supersonic150_PSI_array*bar2Pa + 269;
 
     % Assembling tables of the converted values
-    supersonic150_PSI_bar_tab = [supersonic150_PSI_tab(:,1)];
-    supersonic150_PSI_bar_tab = horzcat( supersonic150_PSI_bar_tab,array2table(supersonic150_PSI_bar_array) );
-    supersonic150_PSI_bar_tab.Properties.VariableNames = columnNames
+    supersonic150_PSI_pascals_tab = [supersonic150_PSI_tab(:,1)];
+    supersonic150_PSI_pascals_tab = horzcat( supersonic150_PSI_pascals_tab,array2table(supersonic150_PSI_pascals_array) );
+    % supersonic150_PSI_pascals_tab.Properties.VariableNames = columnNames
 
-    supersonic75_PSI_bar_tab = [supersonic75_PSI_tab(:,1)];
-    supersonic75_PSI_bar_tab = horzcat( supersonic75_PSI_bar_tab,array2table(supersonic75_PSI_bar_array) );
-    supersonic75_PSI_bar_tab.Properties.VariableNames = columnNames
+    supersonic75_PSI_pascals_tab = [supersonic75_PSI_tab(:,1)];
+    supersonic75_PSI_pascals_tab = horzcat( supersonic75_PSI_pascals_tab,array2table(supersonic75_PSI_pascals_array) );
+    % supersonic75_PSI_pascals_tab.Properties.VariableNames = columnNames
+
+%% Finding the pressure ratios (P_0/P)
+% For the 150psi working condition
+pressureRatio_150_plot = [ supersonic150_PSI_pascals_array(:,1)./supersonic150_PSI_pascals_array(:,1) supersonic150_PSI_pascals_array(:,1)./supersonic150_PSI_pascals_array(:,2:26) ];
+xaxisValues = 1:26;                                                                                             % the pressure tap numbers
+plot(xaxisValues,pressureRatio_150_plot')
+grid on
+grid minor
+legend('Reading 1', 'Reading 2', 'Reading 3', 'Reading 4', 'Reading 5', 'Reading 6', 'Reading 7', 'Reading 8', 'Reading 9', 'Reading 10')
+title('Pressure variation along working section. Working condition: 150psi')
+
+
+
+% For the 75psi working condition
+pressureRatio_75_plot = [ supersonic75_PSI_pascals_array(:,1)./supersonic75_PSI_pascals_array(:,1) supersonic75_PSI_pascals_array(:,1)./supersonic75_PSI_pascals_array(:,2:26) ]
+plot(xaxisValues,pressureRatio_75_plot')
+grid on
+grid minor
+legend('Reading 1', 'Reading 2', 'Reading 3', 'Reading 4', 'Reading 5', 'Reading 6', 'Reading 7', 'Reading 8', 'Reading 9', 'Reading 10')
+title('Pressure variation along working section. Working condition: 75psi')
+
+Task 1.3: Theoretical Mach number at different regimes, shock and expansion fan angles compared with WT measurements
 
