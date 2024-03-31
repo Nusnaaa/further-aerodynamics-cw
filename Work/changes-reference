@@ -100,6 +100,11 @@ ylabel("Theoretical Mach Number")
 grid on
 grid minor
 
+% Assembling a table of mach numbers against the distance along the working section
+distances = (bottomSurface(:,1));
+mach_distance_relationship_arr = [distances M_new'];
+mach_distance_relationship = array2table(mach_distance_relationship_arr)
+
 Task 1.2: WT measured pressure ratio and Mach number along working section at two test conditions
 The wind tunnel is run at 2 different pressures - 150psi and 75psi- these are the 2 conditions under which the working section is tested. 
 Preparing the raw data
@@ -240,4 +245,14 @@ mach_75_plot = sqrt( 2*( (pressureRatio_75_plot).^( (gamma - 1)/gamma ) - 1 )/(g
 
 Task 1.3: Theoretical Mach number at different regimes, shock and expansion fan angles compared with WT measurements
 To find the theoretical mach number, the Newton-Raphson method will be used. Following the guidance provided on blackboard, the area ratio and a relationship derived from that formula can be used to 'predict' the mach number
+Finding M1
+I will assume that the centre of the wedge is at the centre of the working section. From this, the x-coordiante of the wedge LE can be found and the theoretical mach number at this point(if there was no wedge inside the working section) can be calculated. This value is M1
+wedgeSpan = 25.3;                       % the length of the wedge in [mm]
+workSectionDistance = 19;               % distance of the working section's centre from the inlet of the wind tunnel. In [in.]
 
+wedgeLE = (workSectionDistance*inch2m) - (wedgeSpan*10^-3)/2;           % the x-coordinate along the wind tunnel for the wedge L.E.
+
+mach_distance_relationship;
+
+% Finding M1 at the wedge L.E using "mach_distance_relationship"
+M1 = interp1(mach_distance_relationship_arr(:,1),mach_distance_relationship_arr(:,2),wedgeLE,"linear");
