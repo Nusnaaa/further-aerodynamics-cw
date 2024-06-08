@@ -60,7 +60,7 @@ gamma = 1.4;
 
 % this loop calculates the subsonic theoretical mach numbers of the wind
 % tunnel using the newton raphson method
-for j = 1:19 % the throat where mach =1  is at position 19
+for j = 1:length(areaRatio) % the throat where mach =1  is at position 19
     M(1) = 0.2; % Initial subsonic mach number guess 
     Astar=areaRatio(j);
     for i = 1:1000
@@ -78,25 +78,31 @@ end
 
 % this loop calculates the supersonic theoretical mach numbers of the wind
 % tunnel using the newton raphson method
-for j = 20:length(areaRatio) % the throat where mach =1  at position 19
-    M(1) = 1.8; % Initial guess for supersonic mach number 
+for j = 1:length(areaRatio) % the throat where mach =1  at position 19
+    M_super(1) = 1.8; % Initial guess for supersonic mach number 
     Astar=areaRatio(j);
     for i = 1:1000
-        f(i) = Astar.*M(i) - ( ( 1 + ( (gamma - 1)/2 ).*(M(i))^2 )/( (gamma + 1)/2 ) )^( (gamma + 1)/(2*(gamma - 1)) );
-        df(i) = Astar - M(i).*( ( 1 + ((gamma - 1)/2).*(M(i))^2 )/( (gamma+1)/2 ) )^( ( (gamma + 1)/(2*(gamma - 1)) )- 1 );
-        M_new(j) = M(i) - f(i)./df(i); % Calcuates the new mach number 
-        if abs(M_new-M(i)) < 1e-20 % compares the difference in mach number to a specified tolerance 
+        f(i) = Astar.*M_super(i) - ( ( 1 + ( (gamma - 1)/2 ).*(M_super(i))^2 )/( (gamma + 1)/2 ) )^( (gamma + 1)/(2*(gamma - 1)) );
+        df(i) = Astar - M_super(i).*( ( 1 + ((gamma - 1)/2).*(M_super(i))^2 )/( (gamma+1)/2 ) )^( ( (gamma + 1)/(2*(gamma - 1)) )- 1 );
+        M_new_super(j) = M_super(i) - f(i)./df(i); % Calcuates the new mach number 
+        if abs(M_new_super-M_super(i)) < 1e-20 % compares the difference in mach number to a specified tolerance 
             break 
         end  
            i=i+1;
-           M(i) = M_new(j); % Makes the new mach number the starting point for the next interation 
+           M_super(i) = M_new_super(j); % Makes the new mach number the starting point for the next interation 
     end
     j=j+1;
 end
 
-plot(bottomSurface(:,1),M_new)
+plot(bottomSurface(:,1),M_new)                  % Plotting the subsonic(low mach) numbers
+hold on
+plot(bottomSurface(3:19,1),M_new_super(3:19),'r--')                         % Plotting the supersonic(high mach) numbers before it intersects with the low mach plot
+plot(bottomSurface(19:end,1),M_new_super(19:end),'r-')                      % Plotting the supersonic(high mach) numbers after it intersects with the low mach plot
+xline(bottomSurface(19,1),'k--')
 xlabel("Distance along working section(m)")
 ylabel("Theoretical Mach Number")
+title('Mach Number Variation across Wind Tunnel Length')
+legend('Low Mach Assumption', 'Theoretical High Mach Assumption', 'High Mach Assumption', 'Throat position = 0.1730')
 grid on
 grid minor
 
