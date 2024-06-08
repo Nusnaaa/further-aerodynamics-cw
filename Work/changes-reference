@@ -105,11 +105,44 @@ title('Mach Number Variation across Wind Tunnel Length')
 legend('Low Mach Assumption', 'Theoretical High Mach Assumption', 'High Mach Assumption', 'Throat position = 0.1730')
 grid on
 grid minor
+hold off
 
 % Assembling a table of mach numbers against the distance along the working section
 distances = (bottomSurface(:,1));
 mach_distance_relationship_arr = [distances M_new'];
 mach_distance_relationship = array2table(mach_distance_relationship_arr)
+
+Calculating and plotting temperature and pressure ratios as they vary across the wind tunnel's length
+
+% For the high mach assumption
+highMachPressureRatio = ( 1 + ( (gamma-1)/2 ).*M_new_super.^2 ).^( gamma/(gamma - 1) )
+highMachTemperatureRatio = 1 + ( (gamma-1)/2 ).*M_new_super.^2
+
+% For the low mach assumption
+lowMachPressureRatio = ( 1 + ( (gamma-1)/2 ).*M_new.^2 ).^( gamma/(gamma - 1) )
+lowMachTemperatureRatio = 1 + ( (gamma-1)/2 ).*M_new.^2
+
+% Plotting the Tempreature Ratio Variation
+plot(bottomSurface(:,1),lowMachTemperatureRatio)                  % Plotting the subsonic(low mach) numbers' tempreature ratios
+hold on
+plot(bottomSurface(3:19,1),highMachTemperatureRatio(3:19),'r--')                         % Plotting the supersonic(high mach) numbers' tempreature ratios before it intersects with the low mach plot
+plot(bottomSurface(19:end,1),highMachTemperatureRatio(19:end),'r-')                      % Plotting the supersonic(high mach) numbers' tempreature ratios after it intersects with the low mach plot
+xlabel("Distance along working section(m)")
+ylabel("Temperature(deg C)")
+title('Temperature Ratio Variation across Wind Tunnel Length')
+legend('Low Mach Assumption', 'Theoretical High Mach Assumption', 'High Mach Assumption')
+hold off
+
+% PLotting the Pressure Ratio Variation
+plot(bottomSurface(:,1),lowMachPressureRatio)                  % Plotting the subsonic(low mach) numbers' pressure ratios
+hold on
+plot(bottomSurface(3:19,1),highMachPressureRatio(3:19),'r--')                         % Plotting the supersonic(high mach) numbers' pressure ratios before it intersects with the low mach plot
+plot(bottomSurface(19:end,1),highMachPressureRatio(19:end),'r-')                      % Plotting the supersonic(high mach) numbers' pressure ratios after it intersects with the low mach plot
+xlabel("Distance along working section(m)")
+ylabel("Pressure (Pa)")
+title('Pressure Ratio Variation across Wind Tunnel Length')
+legend('Low Mach Assumption', 'Theoretical High Mach Assumption', 'High Mach Assumption')
+hold off
 
 Task 1.2: WT measured pressure ratio and Mach number along working section at two test conditions
 The wind tunnel is run at 2 different pressures - 150psi and 75psi- these are the 2 conditions under which the working section is tested. 
@@ -221,8 +254,8 @@ p_atm = 98910;
 %% Finding the pressure ratios (P_0/P)
 % For the 150psi working condition
 pressureRatio_150_plot = [ supersonic150_PSI_ave(:,1)./supersonic150_PSI_ave(:,1) supersonic150_PSI_ave(:,1)./supersonic150_PSI_ave(:,2:26) ];
-xaxisValues = 1:26;                                                                                             % the pressure tap numbers
-plot(xaxisValues,pressureRatio_150_plot')
+windTunnelLength150 = linspace(0,bottomSurface(end,1),26)                                                                                             % the pressure tap numbers
+plot(windTunnelLength150,pressureRatio_150_plot')
 grid on
 grid minor
 title('Pressure variation along working section. Working condition: 150psi')
@@ -231,8 +264,8 @@ title('Pressure variation along working section. Working condition: 150psi')
 
 % % For the 75psi working condition
 pressureRatio_75_plot = [ supersonic75_PSI_ave(:,1)./supersonic75_PSI_ave(:,1) supersonic75_PSI_ave(:,1)./supersonic75_PSI_ave(:,2:25) ];
-xaxisValues = 1:25;                                                                                             % the pressure tap numbers
-plot(xaxisValues,pressureRatio_75_plot')
+windTunnelLength75 = linspace(0,bottomSurface(end,1),25);                                                                                             % the pressure tap numbers
+plot(windTunnelLength75,pressureRatio_75_plot')
 grid on
 grid minor
 title('Pressure variation along working section. Working condition: 75psi')
@@ -241,13 +274,27 @@ grid minor
 title('Pressure variation along working section. Working condition: 75psi')
 
 
+Finding the mach numbers using the presure ratios
 
-%% Finding the mach numbers using the presure ratios
+
 % For the 150psi working condition
 mach_150_plot = pressureRatio_150_plot.^0.2857
 
 % For the 75psi working condition
 mach_75_plot = sqrt( 2*( (pressureRatio_75_plot).^( (gamma - 1)/gamma ) - 1 )/(gamma-1) )
+
+% Plotting the mach numbers
+plot(windTunnelLength75,mach_75_plot)
+plot(windTunnelLength150,mach_150_plot)
+
+Finding the temperature ratios using pressure ratios
+
+temperarureRatio_75 = 1 + ( (gamma-1)/2 ).* mach_75_plot.^2;
+temperarureRatio_150 = 1 + ( (gamma-1)/2 ).* mach_150_plot.^2;
+
+% Plotting the tempreature ratios
+plot(windTunnelLength75,temperarureRatio_75)
+plot(windTunnelLength150,temperarureRatio_150)
 
 Task 1.3: Theoretical Mach number at different regimes, shock and expansion fan angles compared with WT measurements
 To find the theoretical mach number, the Newton-Raphson method will be used. Following the guidance provided on blackboard, the area ratio and a relationship derived from that formula can be used to 'predict' the mach number
