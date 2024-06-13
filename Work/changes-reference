@@ -344,6 +344,29 @@ secondObliqueShockAngle = 36;
 M_n3 = M3*sind(secondObliqueShockAngle)
 M_n3_squared = sqrt(( (gamma - 1)*M_n3^2 + 2 )/( 2.*gamma*M_n3.^2 - (gamma - 1) ) );
 M4 = ( sqrt(M_n3_squared) )/( sind(firstObliqueShockAngle - firstNormalAngle) )
+Plotting the flow over the wedge
+plot([0 40],[10 10],'k--')                            % A horizontal line
+hold on
+% Plotting the wedge shape
+plot([5 5+wedgeSpan/2 5+wedgeSpan],[10 10+wedgeThickness 10],'k-')                      % Upper Surface
+plot([5 5+wedgeSpan/2 5+wedgeSpan],[10 10-wedgeThickness 10],'k-')                      % Lower Surface
+ylim([0 20])
+
+% Plotting the oblique shocks due to M1's deflection
+M1_x_dist = 5;                                                                      % I decided that the visual representation of the shock formed after M1 makes contact with the wedge will end after 5 horizontal units along the plotted wedge. This distance will be used to find the vertical unit distance usig the oblique shock angle
+M1_y_dist = M1_x_dist*tand(firstObliqueShockAngle);
+plot([5 5+M1_x_dist],[10 10+M1_y_dist],'r-')
+plot([5 5+M1_x_dist],[10 10-M1_y_dist],'r-')
+
+% Plotting the expansion fan(s) at the transition from M2 to M3
+
+
+% Plotting the shock at the end of the wedge
+M4_x_dist = 5;
+M4_y_dist = M4_x_dist*tand(secondObliqueShockAngle);
+plot([5+wedgeSpan 5+wedgeSpan+M1_x_dist],[10 10+M4_y_dist],'m-')
+plot([5+wedgeSpan 5+wedgeSpan+M1_x_dist],[10 10-M4_y_dist],'m-')
+hold off
 Experimental Mach Numbers
 The core method here is the same as the moethod used to find the theoretical ach numbers. The only difference is that the data set used to interpolate the mach numbers has changed from the calculated values in task 1.1 to the values from task 1.2 where the experimental pressure rations were used to calulate the mach numbers
 % Finding M1 using the experimental mach numbers data set
@@ -367,3 +390,68 @@ secondObliqueShockAngle_experiment = 38;                            % Read from 
 M_n3_experiment = M3_experiment*sind(secondObliqueShockAngle_experiment)
 M_n3_squared_experiment = sqrt(( (gamma - 1)*M_n3_experiment^2 + 2 )/( 2.*gamma*M_n3_experiment.^2 - (gamma - 1) ) );
 M4_experiment = ( sqrt(M_n3_squared_experiment) )/( sind(firstObliqueShockAngle_experiment - firstNormalAngle) )
+Plotting the flow over the wedge
+plot([0 40],[10 10],'k--')                            % A horizontal line
+hold on
+% Plotting the wedge shape
+plot([5 5+wedgeSpan/2 5+wedgeSpan],[10 10+wedgeThickness 10])                      % Upper Surface
+plot([5 5+wedgeSpan/2 5+wedgeSpan],[10 10-wedgeThickness 10])                      % Lower Surface
+ylim([0 20])
+hold off
+Task 1.4 Comparison of theory and WT measurements along working section (Mach  number, pressure ratio, temperature ratio)
+Mach Number Comparison
+% For the theoretical mach numbers
+plot(bottomSurface(:,1),M_new)                  % Plotting the subsonic(low mach) numbers
+hold on
+plot(bottomSurface(3:19,1),M_new_super(3:19),'r--')                         % Plotting the supersonic(high mach) numbers before it intersects with the low mach plot
+plot(bottomSurface(19:end,1),M_new_super(19:end),'r-')                      % Plotting the supersonic(high mach) numbers after it intersects with the low mach plot
+xline(bottomSurface(19,1),'k--')
+
+% For the experimental mach numbers
+plot(windTunnelLength150,mach_150_plot)                          % 150psi condition
+plot(windTunnelLength75,mach_75_plot)                            % 75psi condition
+
+xlabel("Distance along working section(m)")
+ylabel("Mach Number")
+title('Comparison of Mach Number Variation across Wind Tunnel Length')
+legend('Low Mach Assumption', 'Theoretical High Mach Assumption', 'High Mach Assumption', 'Throat position = 0.1730', 'Experimental Mach, 150psi condition', 'Experimental Mach, 75psi condition')
+grid on
+grid minor
+hold off
+Pressure Ratio Comparison
+% For the theoretical pressure ratios
+plot(bottomSurface(:,1),lowMachPressureRatio)                  % Plotting the subsonic(low mach) numbers' pressure ratios
+hold on
+plot(bottomSurface(3:19,1),highMachPressureRatio(3:19),'r--')                         % Plotting the supersonic(high mach) numbers' pressure ratios before it intersects with the low mach plot
+plot(bottomSurface(19:end,1),highMachPressureRatio(19:end),'r-')                      % Plotting the supersonic(high mach) numbers' pressure ratios after it intersects with the low mach plot
+
+
+% For the experimental pressure ratios
+plot(windTunnelLength150,pressureRatio_150_plot')
+plot(windTunnelLength75,pressureRatio_75_plot')
+
+grid on
+grid minor
+xlabel("Distance along working section(m)")
+ylabel("Pressure (Pa)")
+title('Pressure Ratio Variation across Wind Tunnel Length')
+legend('Low Mach Assumption', 'Theoretical High Mach Assumption', 'High Mach Assumption(Theory)', 'Experimental Pressure Ratio, 150psi condition', 'Experimental Pressure Ratio, 75psi condition')
+hold off
+Temperature Ratio Comaprison
+% For the theoretical temperature ratios
+plot(bottomSurface(:,1),lowMachTemperatureRatio)                  % Plotting the subsonic(low mach) numbers' tempreature ratios
+hold on
+plot(bottomSurface(3:19,1),highMachTemperatureRatio(3:19),'r--')                         % Plotting the supersonic(high mach) numbers' tempreature ratios before it intersects with the low mach plot
+plot(bottomSurface(19:end,1),highMachTemperatureRatio(19:end),'r-')                      % Plotting the supersonic(high mach) numbers' tempreature ratios after it intersects with the low mach plot
+
+% For the experimental temperature ratios
+plot(windTunnelLength150,temperarureRatio_150)
+plot(windTunnelLength75,temperarureRatio_75)
+
+grid on
+grid minor
+xlabel("Distance along working section(m)")
+ylabel("Temperature(deg C)")
+title('Temperature Ratio Variation across Wind Tunnel Length')
+legend('Low Mach Assumption', 'Theoretical High Mach Assumption', 'High Mach Assumption', 'Temperature Ratio, 150psi condition', 'Temperature Ratio, 75psi condition')
+hold off
