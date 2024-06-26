@@ -359,13 +359,29 @@ plot([5 5+M1_x_dist],[10 10+M1_y_dist],'r-')
 plot([5 5+M1_x_dist],[10 10-M1_y_dist],'r-')
 
 % Plotting the expansion fan(s) at the transition from M2 to M3
+% Wedge top surface
+expansion_x_1 = 2;
+expansion_x_2_min = 3;
+expansion_x_3 = 4;
+expansion_y_1 = 4;
+expansion_y_2 = 3.7;
+expansion_y_3 = 3.5;
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_1],[10+wedgeThickness 10+wedgeThickness+expansion_y_1],'k--')
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_2],[10+wedgeThickness 10+wedgeThickness+expansion_y_2],'k--')
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_3],[10+wedgeThickness 10+wedgeThickness+expansion_y_3],'k--')
 
+% Wedge bottom surface
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_1_min],[10-wedgeThickness 10-wedgeThickness-expansion_y_1_min],'k--')
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_2_min],[10-wedgeThickness 10-wedgeThickness-expansion_y_2_min],'k--')
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_3_min],[10-wedgeThickness 10-wedgeThickness-expansion_y_3_min],'k--')
 
 % Plotting the shock at the end of the wedge
 M4_x_dist = 5;
 M4_y_dist = M4_x_dist*tand(secondObliqueShockAngle);
 plot([5+wedgeSpan 5+wedgeSpan+M1_x_dist],[10 10+M4_y_dist],'m-')
 plot([5+wedgeSpan 5+wedgeSpan+M1_x_dist],[10 10-M4_y_dist],'m-')
+grid on
+grid minor
 hold off
 Experimental Mach Numbers
 The core method here is the same as the moethod used to find the theoretical ach numbers. The only difference is that the data set used to interpolate the mach numbers has changed from the calculated values in task 1.1 to the values from task 1.2 where the experimental pressure rations were used to calulate the mach numbers
@@ -394,9 +410,40 @@ Plotting the flow over the wedge
 plot([0 40],[10 10],'k--')                            % A horizontal line
 hold on
 % Plotting the wedge shape
-plot([5 5+wedgeSpan/2 5+wedgeSpan],[10 10+wedgeThickness 10])                      % Upper Surface
-plot([5 5+wedgeSpan/2 5+wedgeSpan],[10 10-wedgeThickness 10])                      % Lower Surface
+plot([5 5+wedgeSpan/2 5+wedgeSpan],[10 10+wedgeThickness 10],'k-')                      % Upper Surface
+plot([5 5+wedgeSpan/2 5+wedgeSpan],[10 10-wedgeThickness 10],'k-')                      % Lower Surface
 ylim([0 20])
+
+% Plotting the oblique shocks due to M1's deflection
+M1_x_dist = 5;                                                                      % I decided that the visual representation of the shock formed after M1 makes contact with the wedge will end after 5 horizontal units along the plotted wedge. This distance will be used to find the vertical unit distance usig the oblique shock angle
+M1_y_dist = M1_x_dist*tand(firstObliqueShockAngle_experiment);
+plot([5 5+M1_x_dist],[10 10+M1_y_dist],'r-')
+plot([5 5+M1_x_dist],[10 10-M1_y_dist],'r-')
+
+% Plotting the expansion fan(s) at the transition from M2 to M3
+% Wedge top surface
+expansion_x_1 = 2;
+expansion_x_2_min = 3;
+expansion_x_3 = 4;
+expansion_y_1 = 4;
+expansion_y_2 = 3.7;
+expansion_y_3 = 3.5;
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_1],[10+wedgeThickness 10+wedgeThickness+expansion_y_1],'k--')
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_2],[10+wedgeThickness 10+wedgeThickness+expansion_y_2],'k--')
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_3],[10+wedgeThickness 10+wedgeThickness+expansion_y_3],'k--')
+
+% Wedge bottom surface
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_1_min],[10-wedgeThickness 10-wedgeThickness-expansion_y_1_min],'k--')
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_2_min],[10-wedgeThickness 10-wedgeThickness-expansion_y_2_min],'k--')
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_3_min],[10-wedgeThickness 10-wedgeThickness-expansion_y_3_min],'k--')
+
+% Plotting the shock at the end of the wedge
+M4_x_dist = 5;
+M4_y_dist = M4_x_dist*tand(secondObliqueShockAngle_experiment);
+plot([5+wedgeSpan 5+wedgeSpan+M1_x_dist],[10 10+M4_y_dist],'m-')
+plot([5+wedgeSpan 5+wedgeSpan+M1_x_dist],[10 10-M4_y_dist],'m-')
+grid on
+grid minor
 hold off
 Task 1.4 Comparison of theory and WT measurements along working section (Mach  number, pressure ratio, temperature ratio)
 Mach Number Comparison
@@ -455,3 +502,19 @@ ylabel("Temperature(deg C)")
 title('Temperature Ratio Variation across Wind Tunnel Length')
 legend('Low Mach Assumption', 'Theoretical High Mach Assumption', 'High Mach Assumption', 'Temperature Ratio, 150psi condition', 'Temperature Ratio, 75psi condition')
 hold off
+Task1.5: Uncertainty analysis of Mach number (M) and pressure ratio (Po/P)
+
+uncertaintity_P_s = 50;
+uncertaintity_P_t = 5;
+P_t = p_atm;
+P_s_75 = supersonic75_PSI_ave;
+P_s_150 = supersonic150_PSI_ave;
+
+% For Change in Mach to change in P_s
+delta_mach_to_delta_Ps_75_PSI = ( (-sqrt(5)*P_t)./( (7*P_s_75.^2).*sqrt( (P_t./P_s_75).^(2/7) - 1 ).*(P_t./P_s_75).^(5/7) ) );                     % For the 75 psi working condition
+delta_mach_to_delta_Ps_150_PSI = ( (-sqrt(5)*P_t)./( (7.*P_s_150.^2).*sqrt( (P_t./P_s_150).^(2/7) - 1 ).*(P_t./P_s_150).^(5/7) ) );                     % For the 150 psi working condition
+
+
+% For Change in Mach to change in P_t
+delta_mach_to_delta_Pt_75_PSI = ( (sqrt(5))./( (7*P_s_75.^2).*sqrt( (P_t./P_s_75).^(2/7) - 1 ).*(P_t./P_s_75).^(5/7) ) )                     % For the 75 psi working condition
+delta_mach_to_delta_Pt_150_PSI = ( (sqrt(5))./( (7.*P_s_150).*sqrt( (P_t./P_s_150).^(2/7) - 1 ).*(P_t./P_s_150).^(5/7) ) )                     % For the 150 psi working condition
