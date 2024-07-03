@@ -361,7 +361,7 @@ plot([5 5+M1_x_dist],[10 10-M1_y_dist],'r-')
 % Plotting the expansion fan(s) at the transition from M2 to M3
 % Wedge top surface
 expansion_x_1 = 2;
-expansion_x_2_min = 3;
+expansion_x_2 = 3;
 expansion_x_3 = 4;
 expansion_y_1 = 4;
 expansion_y_2 = 3.7;
@@ -371,9 +371,9 @@ plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_2],[10+wedgeThickness 10+wedge
 plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_3],[10+wedgeThickness 10+wedgeThickness+expansion_y_3],'k--')
 
 % Wedge bottom surface
-plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_1_min],[10-wedgeThickness 10-wedgeThickness-expansion_y_1_min],'k--')
-plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_2_min],[10-wedgeThickness 10-wedgeThickness-expansion_y_2_min],'k--')
-plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_3_min],[10-wedgeThickness 10-wedgeThickness-expansion_y_3_min],'k--')
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_1],[10-wedgeThickness 10-wedgeThickness-expansion_y_1],'k--')
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_2],[10-wedgeThickness 10-wedgeThickness-expansion_y_2],'k--')
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_3],[10-wedgeThickness 10-wedgeThickness-expansion_y_3],'k--')
 
 % Plotting the shock at the end of the wedge
 M4_x_dist = 5;
@@ -423,7 +423,7 @@ plot([5 5+M1_x_dist],[10 10-M1_y_dist],'r-')
 % Plotting the expansion fan(s) at the transition from M2 to M3
 % Wedge top surface
 expansion_x_1 = 2;
-expansion_x_2_min = 3;
+expansion_x_2 = 3;
 expansion_x_3 = 4;
 expansion_y_1 = 4;
 expansion_y_2 = 3.7;
@@ -433,9 +433,9 @@ plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_2],[10+wedgeThickness 10+wedge
 plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_3],[10+wedgeThickness 10+wedgeThickness+expansion_y_3],'k--')
 
 % Wedge bottom surface
-plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_1_min],[10-wedgeThickness 10-wedgeThickness-expansion_y_1_min],'k--')
-plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_2_min],[10-wedgeThickness 10-wedgeThickness-expansion_y_2_min],'k--')
-plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_3_min],[10-wedgeThickness 10-wedgeThickness-expansion_y_3_min],'k--')
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_1],[10-wedgeThickness 10-wedgeThickness-expansion_y_1],'k--')
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_2],[10-wedgeThickness 10-wedgeThickness-expansion_y_2],'k--')
+plot([5+0.5*wedgeSpan 5+0.5*wedgeSpan+expansion_x_3],[10-wedgeThickness 10-wedgeThickness-expansion_y_3],'k--')
 
 % Plotting the shock at the end of the wedge
 M4_x_dist = 5;
@@ -508,7 +508,7 @@ uncertaintity_P_s = 50;
 uncertaintity_P_t = 5;
 P_t = p_atm;
 P_s_75 = supersonic75_PSI_ave;
-P_s_150 = supersonic150_PSI_ave;
+P_s_150 = supersonic150_PSI_ave(2:end);
 
 % For Change in Mach to change in P_s
 delta_mach_to_delta_Ps_75_PSI = ( (-sqrt(5)*P_t)./( (7*P_s_75.^2).*sqrt( (P_t./P_s_75).^(2/7) - 1 ).*(P_t./P_s_75).^(5/7) ) );                     % For the 75 psi working condition
@@ -517,4 +517,23 @@ delta_mach_to_delta_Ps_150_PSI = ( (-sqrt(5)*P_t)./( (7.*P_s_150.^2).*sqrt( (P_t
 
 % For Change in Mach to change in P_t
 delta_mach_to_delta_Pt_75_PSI = ( (sqrt(5))./( (7*P_s_75.^2).*sqrt( (P_t./P_s_75).^(2/7) - 1 ).*(P_t./P_s_75).^(5/7) ) )                     % For the 75 psi working condition
-delta_mach_to_delta_Pt_150_PSI = ( (sqrt(5))./( (7.*P_s_150).*sqrt( (P_t./P_s_150).^(2/7) - 1 ).*(P_t./P_s_150).^(5/7) ) )                     % For the 150 psi working condition
+delta_mach_to_delta_Pt_150_PSI = ( (sqrt(5))./( (7*P_s_150).*sqrt( (P_t./P_s_150).^(2/7) - 1 ).*(P_t./P_s_150).^(5/7) ) )                     % For the 150 psi working condition
+% Finding the change in Mach
+deltaMach_75_PSI = sqrt( (delta_mach_to_delta_Ps_75_PSI.*uncertaintity_P_s).^2 + (delta_mach_to_delta_Pt_75_PSI.*uncertaintity_P_t).^2 )
+deltaMach_150_PSI = sqrt( (delta_mach_to_delta_Ps_150_PSI.*uncertaintity_P_s).^2 + (delta_mach_to_delta_Pt_150_PSI.*uncertaintity_P_t).^2 )
+% Assembling a table of both uncertaintities
+mach_uncertaintities_arr = [deltaMach_75_PSI' deltaMach_150_PSI'];
+mach_uncertaintities_tab = array2table(mach_uncertaintities_arr)
+mach_uncertaintities_tab.Properties.VariableNames = ["75 PSI" "150 PSI"]
+uncertaintity_mach_75_ave = mean(deltaMach_75_PSI)
+uncertaintity_mach_150_ave = mean(deltaMach_150_PSI)
+% Finding the pressure ratio uncertaintities
+delta_Pt_to_Ps_75 = sqrt((( uncertaintity_P_t./ P_s_75).^2 )+(-(P_t.*uncertaintity_P_s)./(P_s_75.^2)).^2);
+
+
+delta_Pt_to_Ps_150 = sqrt((( uncertaintity_P_t./ P_s_150).^2 )+(-(P_t.*uncertaintity_P_s)./(P_s_150.^2)).^2);
+
+
+pressure_uncertaintities_arr = [delta_Pt_to_Ps_75' delta_Pt_to_Ps_150'];
+pressure_uncertaintities_tab = array2table(pressure_uncertaintities_arr);
+pressure_uncertaintities_tab.Properties.VariableNames = ["75 PSI" "150 PSI"]
