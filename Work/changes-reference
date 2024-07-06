@@ -1,6 +1,8 @@
 Conversions
 inch2m = 1/39.37;
 bar2Pa = 100000;
+mbar2Pa = 100;
+degC2K = 273.15;
 Task 1.1: Theoretical Mach number variation along working section 
 Interpolating the wind tunnel liner dimensions
 Interpolation is necessary to align the points on both sections of the aerofoil. Later calculations will require consistent, matching point numbering. The values will also be converted to SI units from Imperial units.
@@ -537,3 +539,212 @@ delta_Pt_to_Ps_150 = sqrt((( uncertaintity_P_t./ P_s_150).^2 )+(-(P_t.*uncertain
 pressure_uncertaintities_arr = [delta_Pt_to_Ps_75' delta_Pt_to_Ps_150'];
 pressure_uncertaintities_tab = array2table(pressure_uncertaintities_arr);
 pressure_uncertaintities_tab.Properties.VariableNames = ["75 PSI" "150 PSI"]
+Task 2.1  WT pressure measurements and resultant velocity profiles at measurement  location, drag calculation using momentum equation, drag coefficient and compare  with measured data
+Extracting Excel data
+distances = [20 40 60 80 100 110 120 125 130 135 140 145 150 155 160 165 170 175 180 190 200 220 240 260 280];                              % in [mm]
+atmosphericPressure = 1006;                 % in mbar
+atmosphericPressure_pascals = atmosphericPressure*mbar2Pa;              % atmospheric pressure in Pa
+AoA = 2.5;                                  % in deg
+ambientTemp = 23.3;                         % in deg C
+nominalTunnelSpeed = 25;                    % in m/s
+
+run1_speed = 25;            % m/s
+run3_speed = 24.7;          % m/s
+run2_speed = 26.6;          % m/s
+run_1_dynamicPress = [330
+375
+387
+396
+397
+
+404
+407
+409
+416
+407
+415
+425
+433
+429
+433
+432
+424
+427
+430
+409
+413
+382
+428
+422
+];
+run1_distances = [20
+40
+60
+80
+100
+
+120
+125
+130
+135
+140
+145
+150
+155
+160
+165
+170
+175
+180
+190
+200
+220
+240
+260
+280
+];                                      % in [mm]
+run1_section_temp = 23.3;               %deg C
+
+run2_section_temp = [23.4 23.4 23.4 23.4 23.3*ones(1,21)]
+run2_dynamicPress = [407
+400
+402
+391
+374
+399
+393
+404
+399
+403
+405
+394
+399
+409
+396
+403
+394
+395
+400
+400
+399
+409
+416
+417
+375
+];
+
+run_3_dynamicPress = [367
+373
+370
+350
+363
+368
+370
+369
+363
+370
+373
+371
+366
+370
+369
+370
+376
+374
+365
+379
+382
+381
+379
+381
+388
+];
+
+run_3_section_temp = [23.5*ones(1,16) 23.4*ones(1,9)];
+
+Calculating Drag and Coefficient of drag for each run
+After doing this, I will average the results for final reporting, as all 3 runs use the same AoA
+R = 287.058;                            % gas constant
+ambientTempreature = ambientTemp + degC2K;                      % ambient temperature in K
+
+airDensity_tunnel = atmosphericPressure_pascals/(R*ambientTempreature)                  % density of the air within the wind tunnel
+rho_air = 1.225;                            % in kg/m^3. Standard air density. ISA conditions @ MSL
+
+% Defining the bounds for the integration
+h = distances(1)*10^-3;                         % in [m]
+b= distances(end)*10^-3;                        % in [m]
+span = 0.3;                                     % in [m]
+chord = 0.15;                                   % in [m]
+Area = chord*span;                              % in [m^2]
+u1 = nominalTunnelSpeed
+
+% Finding u2 for all runs
+u2_run1 = sqrt( (2*run_1_dynamicPress)./rho_air );
+u2_run2 = sqrt( (2*run2_dynamicPress)./rho_air );
+u2_run3 = sqrt( (2*run_3_dynamicPress)./rho_air );
+
+
+% Finding the drag for run 1 using the symbolic math toolbox
+syms x D(x)
+fun = @(x1) rho_air.*u2_run1.*(u1 - u2_run1).*(run1_distances*10^-3);
+Drag_run1 = integral(fun,h,b,"ArrayValued",true);
+     total_run1_drag = sum(Drag_run1)
+C_D_run1 = Drag_run1./ (0.5*rho_air.*u1.^2.*Area);
+    run1_total_C_D = total_run1_drag./ (0.5*rho_air.*u1.^2.*Area)
+% Finding the drag for run 2 using the symbolic math toolbox
+syms x D(x)
+fun = @(x) rho_air.*u2_run2.*(u1 - u2_run2).*( (distances')*10^-3 );
+Drag_run2 = integral(fun,h,b,"ArrayValued",true);
+     total_run2_drag = sum(Drag_run2)
+C_D_run2 = Drag_run2./ (0.5*rho_air.*u1.^2.*Area);
+    run2_total_C_D = total_run2_drag./ (0.5*rho_air.*u1.^2.*Area)
+
+% Finding the drag for run 3 using the symbolic math toolbox
+syms x D(x)
+fun = @(x3) rho_air.*u2_run3.*(u1 - u2_run3).*( (distances')*10^-3 );
+Drag_run3 = integral(fun,h,b,"ArrayValued",true);
+     total_run3_drag = sum(Drag_run3)
+C_D_run3 = Drag_run3./ (0.5*rho_air.*u1.^2.*Area);
+    run3_total_C_D = total_run3_drag./ (0.5*rho_air.*u1.^2.*Area)
+There is missing information in the data used to calculate drag and it's coefficient for run 1. The averaged data will not include run 1. Rather, an average of runs 2 and 3 will be used and run 1's calculated drag/ drag coefficient will be plotted as is. There exist a few methods to approximate the missing information, like interpolation, but I will represent the data as it exists.
+Drags = [Drag_run2'; Drag_run3'];
+aveDrags = mean(Drags,1)
+Pressures = [run_3_dynamicPress' run2_dynamicPress']
+aveDynamicPressures = mean(Pressures,1)
+Task 2.2 Uncertainty analysis of drag coefficient
+
+sigma_q = (0.01./run_1_dynamicPress).^2;
+sigma_q5 = (0.01./aveDynamicPressure).^2;
+sigma_s = (0.0005./Area).^2;
+sigma_AoA = (0.5/5)^2;
+sigma_u1 = (0.01/u1);
+sigma_rho = 0.5;
+sigma_pito = ( 1./(distances*10^-3) ).^2;
+sigma_L = (0.0005/0.15).^2%m
+%__________________________________________________________
+
+sigma_Drag_F = 0.015 % N from web page
+sigma_Lift_F = 0.05 % N from web page
+sigma_Mach = 0.02 %N from web page
+
+a = ((sigma_Drag_F./D_0).^2)
+b = ((sigma_q./q_0).^2)
+c = sigma_L
+d = ((0.5e-3./0.3).^2) 
+
+
+partialCD = CD_0 .* sqrt( a + b + c  + d)
+%__________________________________________________________
+
+
+uncert_y = y.* sigma_pito;
+uncert_0 = CD_0.* sqrt(sigma_q+sigma_s);
+uncert_5 = CD_5.* sqrt(sigma_q5+sigma_s);
+uncert_yy = CD_y.* sqrt(sigma_q5+sigma_s);
+
+uncertline0 = CD_0 + uncert_0;
+uncertline0_ = CD_0 - uncert_0;
+    uncertline5 = CD_5 + uncert_5;
+    uncertline5_ = CD_5 - uncert_5;
+sum(uncert_0)
+sum(uncert_5)
