@@ -709,42 +709,58 @@ C_D_run3 = Drag_run3./ (0.5*rho_air.*u1.^2.*Area);
 There is missing information in the data used to calculate drag and it's coefficient for run 1. The averaged data will not include run 1. Rather, an average of runs 2 and 3 will be used and run 1's calculated drag/ drag coefficient will be plotted as is. There exist a few methods to approximate the missing information, like interpolation, but I will represent the data as it exists.
 Drags = [Drag_run2'; Drag_run3'];
 aveDrags = mean(Drags,1)
+CDs = [C_D_run2 C_D_run3];
+aveCD = mean(CDs,1)
+
 Pressures = [run_3_dynamicPress' run2_dynamicPress']
-aveDynamicPressures = mean(Pressures,1)
+aveDynamicPressures = mean(Pressures)
 Task 2.2 Uncertainty analysis of drag coefficient
 
-sigma_q = (0.01./run_1_dynamicPress).^2;
-sigma_q5 = (0.01./aveDynamicPressure).^2;
-sigma_s = (0.0005./Area).^2;
-sigma_AoA = (0.5/5)^2;
+sigma_q_div_q = (0.01./run_1_dynamicPress).^2;
+sigma_q_2_div_q_2 = (0.01./run2_dynamicPress).^2;
+sigma_q_3_div_q_3 = (0.01./run_3_dynamicPress).^2;
+sigma_s_div_S = (0.0005./Area).^2;
 sigma_u1 = (0.01/u1);
-sigma_rho = 0.5;
-sigma_pito = ( 1./(distances*10^-3) ).^2;
-sigma_L = (0.0005/0.15).^2%m
-%__________________________________________________________
 
-sigma_Drag_F = 0.015 % N from web page
-sigma_Lift_F = 0.05 % N from web page
-sigma_Mach = 0.02 %N from web page
+uncertain_1 = C_D_run1.* sqrt(sigma_q_div_q + sigma_s_div_S);
+uncertain_2 = C_D_run2'.* sqrt(sigma_q_2_div_q_2 + sigma_s_div_S);
+uncertain_3 = C_D_run3'.* sqrt(sigma_q_3_div_q_3 + sigma_s_div_S);
 
-a = ((sigma_Drag_F./D_0).^2)
-b = ((sigma_q./q_0).^2)
-c = sigma_L
-d = ((0.5e-3./0.3).^2) 
-
-
-partialCD = CD_0 .* sqrt( a + b + c  + d)
-%__________________________________________________________
+% For testing
+uncertline0 = C_D_run1 + uncertain_1;               
+uncertline0neg = C_D_run1 - uncertain_1;
+uncertline2 = C_D_run2 + uncertain_2;
+uncertline2neg = C_D_run2 - uncertain_2;
+uncertline3 = C_D_run3 + uncertain_3;
+uncertline3neg = C_D_run3 - uncertain_3;
 
 
-uncert_y = y.* sigma_pito;
-uncert_0 = CD_0.* sqrt(sigma_q+sigma_s);
-uncert_5 = CD_5.* sqrt(sigma_q5+sigma_s);
-uncert_yy = CD_y.* sqrt(sigma_q5+sigma_s);
+% For the C_D comparisons
+plot(run1_distances,C_D_run1,'k','DisplayName','Run 1')
+hold on
+grid on
+xlabel('Height (m)')
+ylabel('Cd')
+title('Cd vs Wind Tunnel Height')
 
-uncertline0 = CD_0 + uncert_0;
-uncertline0_ = CD_0 - uncert_0;
-    uncertline5 = CD_5 + uncert_5;
-    uncertline5_ = CD_5 - uncert_5;
-sum(uncert_0)
-sum(uncert_5)
+errorbar(run1_distances,C_D_run1,uncertain_1,'vertical','k')
+plot(distances,C_D_run2,'m','DisplayName','Run 2')
+errorbar(distances,C_D_run2,uncertain_2,'vertical','m')
+plot(distances,C_D_run3,'b','DisplayName','Run 3')
+errorbar(distances,C_D_run3,uncertain_3,'vertical','b')
+hold off
+
+% For the velocity comparisons
+plot(run1_distances,u2_run1,'k','DisplayName','Run 1')
+hold on
+grid on
+xlabel('Height (m)')
+ylabel('Velocity (m/s)')
+title('Velocity vs Wind Tunnel Height')
+
+errorbar(run1_distances,u2_run1,sigma_u1,'vertical','k')
+plot(distances,u2_run2,'m','DisplayName','Run 2')
+errorbar(distances,u2_run2,sigma_u1,'vertical','m')
+plot(distances,u2_run3,'b','DisplayName','Run 3')
+errorbar(distances,u2_run3,sigma_u1,'vertical','b')
+hold off
